@@ -9,8 +9,8 @@ import java.util.List;
 @Setter
 @Getter
 @NoArgsConstructor
-public class Role {
-    private Long id;
-    private String name;
-    private List<Employee> employees;
+public class EmployeeRole {
+    private Long roleId;
+    private Long employeeId;
+    private String roleName;
 }
