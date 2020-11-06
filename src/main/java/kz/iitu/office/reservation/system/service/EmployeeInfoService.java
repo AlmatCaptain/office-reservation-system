@@ -1,13 +1,20 @@
 package kz.iitu.office.reservation.system.service;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import kz.iitu.office.reservation.system.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class EmployeeInfoService implements UserDetailsService {
@@ -18,8 +25,20 @@ public class EmployeeInfoService implements UserDetailsService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    public Employee[] getListEmployee() {
-        return restTemplate.getForEntity("http://localhost:8081/employee", Employee[].class).getBody();
+    @HystrixCommand(
+            fallbackMethod = "getListEmployeeFallback",
+            threadPoolKey = "getListEmployee",
+            threadPoolProperties = {
+                    @HystrixProperty(name="coreSize", value="100"),
+                    @HystrixProperty(name="maxQueueSize", value="50")
+            }
+    )
+    public List<Employee> getListEmployee() {
+        return restTemplate.exchange(
+                "http://localhost:8081/employee",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Employee>>() {}).getBody();
     }
 
     public void addEmployee(Employee e) {
@@ -41,6 +60,15 @@ public class EmployeeInfoService implements UserDetailsService {
 
     public void updateRole(Long id, String role) {
         restTemplate.patchForObject("http://localhost:8081/employee/role/" + id + "?role=" + role, null, String.class);
+    }
+
+    public List<Employee> getListEmployeeFallback() {
+        List<Employee> list = new ArrayList<>();
+        Employee e = new Employee();
+        e.setUsername("fallback");
+        e.setPassword("fallback");
+        list.add(e);
+        return list;
     }
 
     @Override

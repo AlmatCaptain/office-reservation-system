@@ -38,6 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf()
+            .ignoringAntMatchers("/actuator/hystrix.stream")
             .disable()
             .authorizeRequests()
             .antMatchers("/employees/registration")

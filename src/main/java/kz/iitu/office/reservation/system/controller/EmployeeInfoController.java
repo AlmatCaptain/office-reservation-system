@@ -22,7 +22,7 @@ public class EmployeeInfoController {
     }
 
     @GetMapping
-    public Employee[] getListEmployee() {
+    public List<Employee> getListEmployee() {
         return employeeService.getListEmployee();
     }
 

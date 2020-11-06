@@ -5,6 +5,8 @@ import kz.iitu.office.reservation.system.service.ReservedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/reserves")
@@ -18,7 +20,7 @@ public class ReserveController {
     }
 
     @GetMapping
-    public ReservedRooms[] getAllResRoom() {
+    public List<ReservedRooms> getAllResRoom() {
         return reservedService.getAllResRoom();
     }
 
@@ -39,7 +41,7 @@ public class ReserveController {
     }
 
     @GetMapping("/{num}")
-    public ReservedRooms[] getReserveById(@PathVariable String num) {
+    public List<ReservedRooms> getReserveById(@PathVariable String num) {
         return reservedService.getReservesByRoom(num);
     }
 

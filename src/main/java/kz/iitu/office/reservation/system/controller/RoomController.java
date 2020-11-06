@@ -6,6 +6,8 @@ import kz.iitu.office.reservation.system.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/rooms")
@@ -19,7 +21,7 @@ public class RoomController {
     }
 
     @GetMapping
-    public Room[] getAllRooms() {
+    public List<Room> getAllRooms() {
         return roomService.getAllRooms();
     }
 
