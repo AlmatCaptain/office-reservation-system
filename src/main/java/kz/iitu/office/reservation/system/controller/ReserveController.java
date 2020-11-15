@@ -9,7 +9,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
-@RequestMapping("/reserves")
+@RequestMapping("/api/reserves")
 public class ReserveController {
 
     private final ReservedService reservedService;
