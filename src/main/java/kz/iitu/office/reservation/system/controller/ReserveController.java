@@ -25,8 +25,8 @@ public class ReserveController {
     }
 
     @PostMapping("/add")
-    public void addReserve(@RequestBody ReservedRooms reserve) {
-        reservedService.addReserve(reserve);
+    public String addReserve(@RequestBody ReservedRooms reserve) {
+        return reservedService.addReserve(reserve);
     }
 
     @DeleteMapping("/delete/{id}")

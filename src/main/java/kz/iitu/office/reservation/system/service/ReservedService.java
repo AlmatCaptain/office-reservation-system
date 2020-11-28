@@ -2,7 +2,6 @@ package kz.iitu.office.reservation.system.service;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
-import kz.iitu.office.reservation.system.model.Employee;
 import kz.iitu.office.reservation.system.model.ReservedRooms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -20,6 +19,12 @@ public class ReservedService {
     @Autowired
     RestTemplate restTemplate;
 
+    private final KafkaProducerService producerService;
+
+    public ReservedService(KafkaProducerService producerService) {
+        this.producerService = producerService;
+    }
+
     @HystrixCommand(
             fallbackMethod = "getResRoomFallback",
             threadPoolKey = "getAllResRoom",
@@ -33,9 +38,9 @@ public class ReservedService {
                 new ParameterizedTypeReference<List<ReservedRooms>>() {}).getBody();
     }
 
-    public void addReserve(ReservedRooms reserve) {
+    public String addReserve(ReservedRooms reserve) {
         System.out.println(reserve);
-        restTemplate.postForEntity("http://localhost:8082/reserves/add", reserve, ReservedRooms.class);
+        return this.producerService.sendReserveRequest(reserve);
     }
 
     public void removeReserve(Long id) {
