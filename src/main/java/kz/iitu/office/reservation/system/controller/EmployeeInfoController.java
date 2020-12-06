@@ -1,17 +1,14 @@
 package kz.iitu.office.reservation.system.controller;
 
 import kz.iitu.office.reservation.system.model.Employee;
-import kz.iitu.office.reservation.system.service.AclRoleService;
 import kz.iitu.office.reservation.system.service.EmployeeInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
-@RequestMapping("/api/employees")
+@RequestMapping("/employees")
 public class EmployeeInfoController {
 
     private final EmployeeInfoService employeeService;

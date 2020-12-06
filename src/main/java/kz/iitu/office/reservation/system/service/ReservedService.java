@@ -38,9 +38,9 @@ public class ReservedService {
                 new ParameterizedTypeReference<List<ReservedRooms>>() {}).getBody();
     }
 
-    public String addReserve(ReservedRooms reserve) {
+    public void addReserve(ReservedRooms reserve) {
         System.out.println(reserve);
-        return this.producerService.sendReserveRequest(reserve);
+        this.producerService.sendReserveRequest(reserve);
     }
 
     public void removeReserve(Long id) {

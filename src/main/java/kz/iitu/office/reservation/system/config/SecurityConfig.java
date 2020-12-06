@@ -41,7 +41,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .ignoringAntMatchers("/actuator/hystrix.stream")
             .disable()
             .authorizeRequests()
-            .antMatchers("/employees/registration")
+            .antMatchers("/employees/**")
+            .not()
+            .fullyAuthenticated()
+            .antMatchers("/actuator/hystrix.stream")
             .not()
             .fullyAuthenticated()
             .antMatchers("/auth/**")
@@ -60,11 +63,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .httpBasic()
             .and()
-            .addFilter(new JwtTokenGeneratorFilter(authenticationManager()))
             .addFilterAfter(
                     new JwtTokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-            .cors()
-            .configurationSource(corsConfigurationSource())
         ;
     }
 
@@ -75,16 +75,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT","PATCH"));
         source.registerCorsConfiguration("/**", configuration.applyPermitDefaultValues());
         return source;
-    }
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(BCryptPasswordEncoder.BCryptVersion.$2Y);
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(employeeInfoService)
-            .passwordEncoder(passwordEncoder());
     }
 }

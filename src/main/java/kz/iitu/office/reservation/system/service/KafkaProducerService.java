@@ -11,7 +11,7 @@ public class KafkaProducerService {
     private static final String TOPIC = "reserve-room-topic";
 
     @Autowired
-    private KafkaTemplate<String, ReservedRooms> kafkaTemplate;
+    KafkaTemplate<String, ReservedRooms> kafkaTemplate;
 
     public String sendReserveRequest(ReservedRooms reserve) {
         this.kafkaTemplate.send(TOPIC, reserve);

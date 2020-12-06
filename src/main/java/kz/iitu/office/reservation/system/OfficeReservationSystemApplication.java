@@ -7,6 +7,7 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboard;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -16,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 @EnableEurekaClient
 @EnableCircuitBreaker
 @EnableHystrixDashboard
+@EnableHystrix
 public class OfficeReservationSystemApplication {
 
 	@Bean
@@ -25,15 +27,6 @@ public class OfficeReservationSystemApplication {
 		requestFactory.setConnectTimeout(3000);
 
 		return new RestTemplate(requestFactory);
-	}
-
-	@Bean(name = "hystrixRegistrationBean")
-	public ServletRegistrationBean servletRegistrationBean() {
-		ServletRegistrationBean registration = new ServletRegistrationBean(
-				new HystrixMetricsStreamServlet(), "/hystrix.stream");
-		registration.setName("hystrixServlet");
-		registration.setLoadOnStartup(1);
-		return registration;
 	}
 
 	public static void main(String[] args) {

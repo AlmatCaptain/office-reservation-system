@@ -20,14 +20,6 @@ public class RoomService {
     @Autowired
     RestTemplate restTemplate;
 
-    @HystrixCommand(
-            fallbackMethod = "getAllRoomsFallback",
-            threadPoolKey = "getAllRooms",
-            threadPoolProperties = {
-                    @HystrixProperty(name="coreSize", value="100"),
-                    @HystrixProperty(name="maxQueueSize", value="50")
-            }
-    )
     public List<Room> getAllRooms() {
         return restTemplate.exchange("http://localhost:8085/rooms", HttpMethod.GET, null,
                 new ParameterizedTypeReference<List<Room>>() {}).getBody();
@@ -41,12 +33,4 @@ public class RoomService {
         restTemplate.postForEntity("http://localhost:8085/rooms/add", room, Room.class);
     }
 
-    public List<Room> getAllRoomsFallback() {
-        List<Room> list = new ArrayList<>();
-        Room r = new Room();
-        r.setNumber("-1");
-        r.setReserves(new ArrayList<>());
-        list.add(r);
-        return list;
-    }
 }
