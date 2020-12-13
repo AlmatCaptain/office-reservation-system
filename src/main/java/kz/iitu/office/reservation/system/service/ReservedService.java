@@ -2,7 +2,9 @@ package kz.iitu.office.reservation.system.service;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
+import kz.iitu.office.reservation.system.model.Employee;
 import kz.iitu.office.reservation.system.model.ReservedRooms;
+import kz.iitu.office.reservation.system.model.dto.ReservedRoomDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -20,9 +22,11 @@ public class ReservedService {
     RestTemplate restTemplate;
 
     private final KafkaProducerService producerService;
+    private final EmployeeInfoService employeeInfoService;
 
-    public ReservedService(KafkaProducerService producerService) {
+    public ReservedService(KafkaProducerService producerService, EmployeeInfoService employeeInfoService) {
         this.producerService = producerService;
+        this.employeeInfoService = employeeInfoService;
     }
 
     @HystrixCommand(
@@ -34,22 +38,30 @@ public class ReservedService {
             }
     )
     public List<ReservedRooms> getAllResRoom() {
-        return restTemplate.exchange("http://localhost:8082/reserves", HttpMethod.GET, null,
+        return restTemplate.exchange("http://office-reserved-room:8082/reserves", HttpMethod.GET, null,
                 new ParameterizedTypeReference<List<ReservedRooms>>() {}).getBody();
     }
 
-    public void addReserve(ReservedRooms reserve) {
-        System.out.println(reserve);
-        this.producerService.sendReserveRequest(reserve);
+    public String addReserve(ReservedRooms reserve) {
+        Employee e = employeeInfoService.getEmployeeById(reserve.getEmployeeId());
+        ReservedRoomDTO dto = new ReservedRoomDTO(
+                reserve.getEmployeeId(),
+                e.getUsername(),
+                reserve.getRoomNumber(),
+                reserve.getDate(),
+                reserve.getToDate()
+        );
+        restTemplate.postForEntity("http://office-reserved-room:8082/reserves/add", reserve, ReservedRooms.class);
+        return this.producerService.sendReserveRequest(dto);
     }
 
     public void removeReserve(Long id) {
-        restTemplate.delete("http://localhost:8082/reserves/delete/" + id);
+        restTemplate.delete("http://office-reserved-room:8082/reserves/delete/" + id);
     }
 
 
     public void updateReserve(Long id, ReservedRooms reserve) {
-        restTemplate.put("http://localhost:8082/reserves/update/" + id, reserve);
+        restTemplate.put("http://office-reserved-room:8082/reserves/update/" + id, reserve);
     }
 
     @HystrixCommand(
@@ -61,7 +73,7 @@ public class ReservedService {
             }
     )
     public List<ReservedRooms> getReservesByRoom(String num) {
-        return restTemplate.exchange("http://localhost:8082/reserves" + num, HttpMethod.GET, null,
+        return restTemplate.exchange("http://office-reserved-room:8082/reserves" + num, HttpMethod.GET, null,
                 new ParameterizedTypeReference<List<ReservedRooms>>() {}).getBody();
     }
 

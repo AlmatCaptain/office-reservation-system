@@ -13,6 +13,6 @@ public class AclRoleService {
     RestTemplate restTemplate;
 
     public ResponseEntity<?> getEmployeeRole(String userId) {
-        return restTemplate.getForEntity("http://localhost:8083/api/v1/roles/" + userId, EmployeeRole.class);
+        return restTemplate.getForEntity("http://office-acl-api:8083/api/v1/roles/" + userId, EmployeeRole.class);
     }
 }

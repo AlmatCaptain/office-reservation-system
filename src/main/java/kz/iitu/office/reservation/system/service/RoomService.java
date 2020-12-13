@@ -21,16 +21,16 @@ public class RoomService {
     RestTemplate restTemplate;
 
     public List<Room> getAllRooms() {
-        return restTemplate.exchange("http://localhost:8085/rooms", HttpMethod.GET, null,
+        return restTemplate.exchange("http://office-room-api:8085/rooms", HttpMethod.GET, null,
                 new ParameterizedTypeReference<List<Room>>() {}).getBody();
     }
 
     public void deleteRoom(String id) {
-        restTemplate.delete("http://localhost:8085/rooms/" + id);
+        restTemplate.delete("http://office-room-api:8085/rooms/" + id);
     }
 
     public void addRoom(Room room) {
-        restTemplate.postForEntity("http://localhost:8085/rooms/add", room, Room.class);
+        restTemplate.postForEntity("http://office-room-api:8085/rooms/add", room, Room.class);
     }
 
 }

@@ -35,7 +35,7 @@ public class EmployeeInfoService implements UserDetailsService {
     )
     public List<Employee> getListEmployee() {
         return restTemplate.exchange(
-                "http://localhost:8081/employee",
+                "http://office-employee-info:8081/employee",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<Employee>>() {}).getBody();
@@ -43,23 +43,28 @@ public class EmployeeInfoService implements UserDetailsService {
 
     public void addEmployee(Employee e) {
         e.setPassword(passwordEncoder.encode(e.getPassword()));
-        restTemplate.postForEntity("http://localhost:8081/employee/add", e, Employee.class);
+        restTemplate.postForEntity("http://office-employee-info:8081/employee/add", e, Employee.class);
     }
 
     public void updateEmployee(Long id, Employee employee) {
-        restTemplate.put("http://localhost:8081/employee/update/" + id, employee, Employee.class);
+        restTemplate.put("http://office-employee-info:8081/employee/update/" + id, employee, Employee.class);
     }
 
     public void updateName(Long id, String name) {
-        restTemplate.patchForObject("http://localhost:8081/employee/update/" + id + "?name=" + name, null, String.class);
+        restTemplate.patchForObject("http://office-employee-info:8081/employee/update/" + id + "?name=" + name, null, String.class);
     }
 
     public void deleteEmployee(Long id) {
-        restTemplate.delete("http://localhost:8081/employee/delete/" + id);
+        restTemplate.delete("http://office-employee-info:8081/employee/delete/" + id);
     }
 
     public void updateRole(Long id, String role) {
-        restTemplate.patchForObject("http://localhost:8081/employee/role/" + id + "?role=" + role, null, String.class);
+        restTemplate.patchForObject("http://office-employee-info:8081/employee/role/" + id + "?role=" + role, null, String.class);
+    }
+
+    public Employee getEmployeeById(Long id) {
+        return restTemplate.exchange("http://office-employee-info:8081/employee/e?id=" + id, HttpMethod.GET,
+                null, Employee.class).getBody();
     }
 
     public List<Employee> getListEmployeeFallback() {
@@ -73,7 +78,7 @@ public class EmployeeInfoService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        Employee employee = restTemplate.getForEntity("http://localhost:8081/employee/" + s, Employee.class).getBody();
+        Employee employee = restTemplate.getForEntity("http://office-employee-info:8081/employee/" + s, Employee.class).getBody();
 
         if (employee == null) {
             throw new UsernameNotFoundException("Member: " + s + " not found!");
